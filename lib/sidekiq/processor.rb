@@ -217,6 +217,10 @@ module Sidekiq
     end
 
     def constantize(str)
+      # try to use ActiveSupport first
+      return str.constantize if str.respond_to?(:constantize)
+
+      # otherwise roll our own
       names = str.split('::')
       names.shift if names.empty? || names.first.empty?
 
@@ -224,6 +228,5 @@ module Sidekiq
         constant.const_defined?(name) ? constant.const_get(name) : constant.const_missing(name)
       end
     end
-
   end
 end
